@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام معد الجديد</title>
+    <style>
+        :root { --gold: #d4af37; --bg: #050505; --love: #ff0055; }
+        body { background: var(--bg); color: #fff; font-family: sans-serif; text-align: center; margin: 0; padding: 20px; }
+        .box { background: #111; padding: 20px; border-radius: 15px; border: 1px solid #333; max-width: 400px; margin: 20px auto; }
+        input, textarea { width: 90%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #000; color: #fff; }
+        button { width: 95%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-send { background: var(--love); color: #fff; }
+        .btn-search { background: #00e5ff; color: #000; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1 style="color: var(--gold);">نظام مَعَد المطور</h1>
+    
+    <div id="main">
+        <button class="btn-send" onclick="show('create')">💖 إنشاء رسالة أونلاين</button>
+        <button class="btn-search" onclick="show('search')">🔍 بحث عن رسالة</button>
+    </div>
+
+    <div id="create" class="hidden">
+        <div class="box">
+            <textarea id="msg" placeholder="اكتب رسالتك هنا"></textarea>
+            <input type="text" id="pin" placeholder="ضع رمزاً سرياً">
+            <button class="btn-send" id="saveBtn" onclick="save()">نشر الرسالة</button>
+            <button onclick="location.reload()">رجوع</button>
+        </div>
+    </div>
+
+    <div id="search" class="hidden">
+        <div class="box">
+            <input type="text" id="spin" placeholder="أدخل الرمز للبحث">
+            <button class="btn-search" id="getBtn" onclick="find()">بحث</button>
+            <button onclick="location.reload()">رجوع</button>
+        </div>
+    </div>
+
+    <div id="display" class="hidden">
+        <div class="box">
+            <h2 style="color: var(--love);">الرسالة المستلمة:</h2>
+            <p id="result" style="font-size: 1.2rem;"></p>
+            <button onclick="location.reload()">إغلاق</button>
+        </div>
+    </div>
+
+    <script>
+        const url = "https://api.npoint.io/469446d3e3871239c87d";
+
+        function show(id) {
+            document.getElementById('main').classList.add('hidden');
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        async function save() {
+            const m = document.getElementById('msg').value;
+            const p = document.getElementById('pin').value;
+            if(!m || !p) return alert("أكمل البيانات");
+            document.getElementById('saveBtn').innerText = "جاري الحفظ...";
+            
+            const res = await fetch(url);
+            let data = await res.json();
+            data[p] = m;
+            await fetch(url, { method: 'POST', body: JSON.stringify(data) });
+            
+            alert("تم الحفظ! أرسل الرمز لمن تحب.");
+            location.reload();
+        }
+
+        async function find() {
+            const p = document.getElementById('spin').value;
+            document.getElementById('getBtn').innerText = "جاري البحث...";
+            const res = await fetch(url);
+            const data = await res.json();
+            
+            if(data[p]) {
+                document.getElementById('search').classList.add('hidden');
+                document.getElementById('display').classList.remove('hidden');
+                document.getElementById('result').innerText = data[p];
+            } else {
+                alert("الرمز غير موجود!");
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
